@@ -60,7 +60,7 @@ class Nagant(commands.Bot):
 
 
 intents = discord.Intents.all()  # intentsの定義
-bot = Nagant(command_prefix="", intents=intents, help_command=None)  # インスタンスの生成
+bot = Nagant(command_prefix="鬼舞辻無惨", intents=intents, help_command=None)  # インスタンスの生成
 
 
 # botの開発者かどうか判定する関数
