@@ -1,6 +1,7 @@
 import json
 from logging import getLogger
 
+from discord import Message, MessageType
 from discord.ext import commands
 
 logger = getLogger(f"discord.{__name__}")
@@ -77,6 +78,16 @@ class Times(commands.Cog):
             logger.info("%s unpinned message", user)
         else:
             pass
+
+    @commands.Cog.listener()
+    async def on_message(self, message: Message):
+        # カテゴリ内にピン留めメッセージが送信されたら
+        if (
+            message.type == MessageType.pins_add
+            and message.channel.category_id in config["times_category"]
+        ):
+            # 削除
+            await message.delete()
 
 
 async def setup(bot):
