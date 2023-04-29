@@ -36,7 +36,7 @@ class Times(commands.Cog):
         # 分報カテゴリであるか
         # 自分のメッセージにつけたリアクションであるか
         if (
-            channel.category.id in config["debug"]
+            channel.category.id in config["times_category"]
             and message.author.id == user.id
             and emoji == "📌"
         ):
@@ -46,7 +46,7 @@ class Times(commands.Cog):
 
         # カテゴリ内の他人につけたリアクションであるか
         elif (
-            channel.category.id in config["debug"]
+            channel.category.id in config["times_category"]
             and message.author.id != user.id
             and emoji == "📌"
         ):
@@ -69,7 +69,7 @@ class Times(commands.Cog):
 
         # 分報カテゴリかつ赤ピンが削除された
         if (
-            channel.category.id in config["debug"]
+            channel.category.id in config["times_category"]
             and message.author.id == user.id
             and emoji == "📌"
         ):
