@@ -1,10 +1,10 @@
-import dotenv
 import json
 import logging
 import logging.handlers
 import os
 
 import discord
+import dotenv
 from discord import Embed, Interaction, app_commands
 from discord.ext import commands
 
@@ -79,6 +79,7 @@ async def on_ready():
 @bot.tree.command(description="logファイルを送信する")
 @app_commands.check(is_developer)
 async def log(interaction: Interaction, backup_number: int = None):
+    await interaction.response.defer(ephemeral=True, thinking=True)
     # 引数に1~5を指定してバックアップを参照
     if backup_number != None:
         filename = f"discord.log.{backup_number}"
@@ -88,7 +89,7 @@ async def log(interaction: Interaction, backup_number: int = None):
 
     # 送信処理
     log_file = discord.File(f"./{filename}", filename=filename)
-    await interaction.response.send_message(file=log_file, ephemeral=True)
+    await interaction.followup.send(file=log_file)
 
 
 # cogの管理コマンド
