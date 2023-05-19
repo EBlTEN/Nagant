@@ -46,12 +46,13 @@ class Presence(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        activity = discord.Game(name=Presence.get_wether())
-        await self.bot.change_presence(activity=activity)
+        wether = discord.Game(name=Presence.get_wether())
+        await self.bot.change_presence(activity=wether)
 
     @tasks.loop(minutes=15)
     async def display_tomorrow_wether(self):
-        Presence.get_wether()
+        wether = discord.Game(name=Presence.get_wether())
+        await self.bot.change_presence(activity=wether)
 
 
 async def setup(bot):
