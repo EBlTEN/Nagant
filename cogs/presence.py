@@ -1,10 +1,12 @@
 import json
 from logging import getLogger
 import datetime
+from typing import Literal
 
 import discord
 import requests
 from discord.ext import commands, tasks
+from discord import Interaction, app_commands
 
 logger = getLogger(f"discord.{__name__}")
 
@@ -22,7 +24,6 @@ JST = datetime.timezone(datetime.timedelta(hours=9))
 class Presence(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.display_tomorrow_wether.start()
 
     def get_wether():
         if datetime.datetime.now().hour >= 20:
@@ -48,11 +49,28 @@ class Presence(commands.Cog):
     async def on_ready(self):
         wether = discord.Game(name=Presence.get_wether())
         await self.bot.change_presence(activity=wether)
+        self.display_tomorrow_wether.start()
 
     @tasks.loop(minutes=15)
     async def display_tomorrow_wether(self):
         wether = discord.Game(name=Presence.get_wether())
         await self.bot.change_presence(activity=wether)
+
+    @app_commands.command()
+    async def setstatus(
+        self,
+        interaction: Interaction,
+        status: str,
+        mode: Literal["Wether", "Text"] = "Text",
+    ):
+        if mode == "Text":
+            self.display_tomorrow_wether.cancel()
+            activity = discord.Game(name=status)
+            await self.bot.change_presence(activity=activity)
+
+        elif mode == "Wether":
+            self.display_tomorrow_wether.start()
+        await interaction.response.send_message("変更しました｡", ephemeral=True)
 
 
 async def setup(bot):
