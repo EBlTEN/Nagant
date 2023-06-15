@@ -1,21 +1,20 @@
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Any
+from typing import Any, Optional, Union
 
 from discord import (
     Embed,
     HTTPException,
+    Member,
     Message,
     MessageType,
     TextChannel,
     Thread,
-    Message,
-    Member,
 )
 from discord.ext import commands
 
 import modules
-from modules import FetchDataError, Constant
+from modules import Constant, FetchDataError
 
 logger = getLogger(f"discord.{__name__}")
 
@@ -25,9 +24,9 @@ const: Constant = modules.load_constant()
 @dataclass
 class ReceiveData:
     emoji: str
-    channel: TextChannel | Thread
+    channel: Union[TextChannel, Thread]
     message: Message
-    category_id: int | None
+    category_id: Optional[int]
     member: Member
 
 
@@ -46,13 +45,13 @@ class Times(commands.Cog):
 
     async def get_args(self, payload: Any) -> ReceiveData:
         emoji: str = str(payload.emoji)
-        channel: TextChannel | Thread = self.bot.get_channel(payload.channel_id)
+        channel: Union[TextChannel, Thread] = self.bot.get_channel(payload.channel_id)
         message: Message = await channel.fetch_message(payload.message_id)
-        category_id: int | None = channel.category_id
+        category_id: Optional[int] = channel.category_id
 
         if not message.guild:
             raise FetchDataError("Failed to get guild.")
-        member: Member | None = message.guild.get_member(payload.user_id)
+        member: Optional[Member] = message.guild.get_member(payload.user_id)
 
         if not member:
             raise FetchDataError("Failed to get member.")

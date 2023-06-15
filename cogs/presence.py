@@ -1,10 +1,9 @@
-from logging import getLogger
+from logging import Logger, getLogger
+from typing import Literal, Optional
 
 import discord
-from discord import Interaction, app_commands, Embed
+from discord import Embed, Interaction, app_commands
 from discord.ext import commands
-from typing import Literal
-from logging import Logger
 
 from modules import checks
 
@@ -26,7 +25,7 @@ class Presence(commands.Cog):
         self,
         interaction: Interaction,
         mode: Literal["clear", "list", "remove", "set"],
-        presence: str | None,
+        presence: Optional[str],
     ) -> None:
         embed: Embed
 
