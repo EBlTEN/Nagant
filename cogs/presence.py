@@ -1,77 +1,73 @@
-import json
 from logging import getLogger
-import datetime
-from typing import Literal
 
 import discord
-import requests
-from discord.ext import commands, tasks
-from discord import Interaction, app_commands
+from discord import Interaction, app_commands, Embed
+from discord.ext import commands
+from typing import Literal
+from logging import Logger
 
-logger = getLogger(f"discord.{__name__}")
+from modules import checks
 
-try:
-    f = open("./config.json", "r")
-    config = json.load(f)[__name__]
-except KeyError:
-    pass
+logger: Logger = getLogger(f"discord.{__name__}")
 
-url = "https://weather.tsukumijima.net/api/forecast/city/140010"
-
-JST = datetime.timezone(datetime.timedelta(hours=9))
+layer: list[str] = []
 
 
 class Presence(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         self.bot = bot
 
-    def get_wether():
-        if datetime.datetime.now().hour >= 20:
-            day = 1
-        else:
-            day = 0
-        try:
-            response = requests.get(url)
-            wether = json.loads(response.text)
-            date = wether["forecasts"][day]["dateLabel"]
-            telop = wether["forecasts"][day]["telop"]
-            max_temp = wether["forecasts"][day]["temperature"]["max"]["celsius"]
-
-            return f"{date} {telop} 最高気温:{max_temp}℃"
-
-        except:
-            return "データの取得に失敗しました｡"
-
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         logger.info("File has been loaded successfully")
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        wether = discord.Game(name=Presence.get_wether())
-        await self.bot.change_presence(activity=wether)
-        self.display_tomorrow_wether.start()
-
-    @tasks.loop(minutes=15)
-    async def display_tomorrow_wether(self):
-        wether = discord.Game(name=Presence.get_wether())
-        await self.bot.change_presence(activity=wether)
-
-    @app_commands.command()
-    async def setstatus(
+    @app_commands.command(description="Presenceを変更します。")
+    @checks.is_developer()
+    async def presence(
         self,
         interaction: Interaction,
-        status: str,
-        mode: Literal["Wether", "Text"] = "Text",
-    ):
-        if mode == "Text":
-            self.display_tomorrow_wether.cancel()
-            activity = discord.Game(name=status)
-            await self.bot.change_presence(activity=activity)
+        mode: Literal["clear", "list", "remove", "set"],
+        presence: str | None,
+    ) -> None:
+        embed: Embed
 
-        elif mode == "Wether":
-            self.display_tomorrow_wether.start()
-        await interaction.response.send_message("変更しました｡", ephemeral=True)
+        if mode == "clear":
+            layer.clear()
+            await self.bot.change_presence(activity=None)
+            embed = discord.Embed(
+                title="Success",
+                description="Presence has been cleared.",
+                color=0x3333CC,
+            )
+
+        elif mode == "list":
+            embed = discord.Embed(
+                title="Presence List", description="\n".join(layer), color=0x3333CC
+            )
+
+        elif mode == "remove":
+            layer.pop(0)
+            await self.bot.change_presence(activity=discord.Game(name=layer[0]))
+            embed = discord.Embed(
+                title="Success",
+                description=f"{presence} has been removed.",
+                color=0x3333CC,
+            )
+
+        elif mode == "set":
+            if not presence:
+                embed = discord.Embed(
+                    title="Error", description="Presence is empty.", color=0xFF0000
+                )
+            else:
+                layer.insert(0, presence)
+                await self.bot.change_presence(activity=discord.Game(name=presence))
+                embed = discord.Embed(
+                    title="Success",
+                    description=f"{presence} has been set.",
+                    color=0x3333CC,
+                )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
-async def setup(bot):
+async def setup(bot) -> None:
     await bot.add_cog(Presence(bot))
