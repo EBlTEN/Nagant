@@ -1,7 +1,8 @@
-from dotenv import load_dotenv
+from dataclasses import dataclass
 from os import environ
 from sys import argv
-from dataclasses import dataclass
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -19,7 +20,10 @@ class DevelopmentConstant(Constant):
 
 
 def load_constant() -> Constant:
-    if argv[1] == "debug":
-        return DevelopmentConstant()
-    else:
+    try:
+        if argv[1] == "debug":
+            return DevelopmentConstant()
+        else:
+            return Constant()
+    except IndexError:
         return Constant()

@@ -1,8 +1,7 @@
 import logging
 import logging.handlers
+from logging import Formatter, Logger, StreamHandler
 from logging.handlers import RotatingFileHandler
-
-from logging import Logger, Formatter, StreamHandler
 
 
 class FetchDataError(Exception):

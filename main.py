@@ -1,10 +1,10 @@
+from logging import Logger
 from os.path import basename
 from pathlib import Path
 
 from discord import Intents
 from discord.app_commands import AppCommand
 from discord.ext import commands
-from logging import Logger
 
 import modules
 

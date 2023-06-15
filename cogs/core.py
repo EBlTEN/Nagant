@@ -1,12 +1,12 @@
-from logging import getLogger
-from typing import Literal
+from logging import Logger, getLogger
+from typing import Literal, Optional
 
 import discord
 from discord import Embed, app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
+
 import modules
-from logging import Logger
 
 logger: Logger = getLogger(f"discord.{__name__}")
 
@@ -23,7 +23,7 @@ class Core(commands.Cog):
     # send log file
     @commands.hybrid_command()
     @modules.is_developer()
-    async def log(self, ctx: Context, backup_number: int | None) -> None:
+    async def log(self, ctx: Context, backup_number: Optional[int]) -> None:
         filename: str
         if backup_number != None:
             filename = f"discord.log.{backup_number}"
