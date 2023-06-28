@@ -1,4 +1,4 @@
-from logging import Logger, getLogger
+from logging import getLogger
 from typing import Literal, Optional
 
 import discord
@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from modules import checks
 
-logger: Logger = getLogger(f"discord.{__name__}")
+logger = getLogger(f"discord.{__name__}")
 
 layer: list[str] = []
 

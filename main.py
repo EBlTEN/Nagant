@@ -6,9 +6,9 @@ from discord import Intents
 from discord.app_commands import AppCommand
 from discord.ext import commands
 
-import modules
+from modules import set_logger, load_constant
 
-logger: Logger = modules.set_logger()
+logger: Logger = set_logger()
 
 
 class Nagant(commands.Bot):
@@ -31,5 +31,5 @@ async def on_ready() -> None:
 
 
 if __name__ == "__main__":
-    const = modules.load_constant()
+    const = load_constant()
     bot.run(const.DISCORD_TOKEN, log_handler=None)

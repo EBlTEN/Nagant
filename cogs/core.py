@@ -1,14 +1,14 @@
-from logging import Logger, getLogger
+from logging import getLogger
 from typing import Literal, Optional
 
 import discord
-from discord import Embed, app_commands
+from discord import Embed, app_commands, Interaction
 from discord.ext import commands
 from discord.ext.commands import Context
 
-import modules
+from modules import checks
 
-logger: Logger = getLogger(f"discord.{__name__}")
+logger = getLogger(f"discord.{__name__}")
 
 
 class Core(commands.Cog):
@@ -20,9 +20,12 @@ class Core(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_load(self) -> None:
+        logger.info("File has been loaded successfully")
+
     # send log file
     @commands.hybrid_command()
-    @modules.is_developer()
+    @checks.is_developer()
     async def log(self, ctx: Context, backup_number: Optional[int]) -> None:
         filename: str
         if backup_number != None:
@@ -35,7 +38,7 @@ class Core(commands.Cog):
 
     # manage cogs
     @commands.hybrid_command()
-    @modules.is_developer()
+    @checks.is_developer()
     @app_commands.describe(cog="cogsフォルダ内のcogファイル")
     async def cog(
         self,

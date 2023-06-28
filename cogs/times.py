@@ -13,12 +13,11 @@ from discord import (
 )
 from discord.ext import commands
 
-import modules
-from modules import Constant, FetchDataError
+from modules import Constant, FetchDataError, load_constant
 
 logger = getLogger(f"discord.{__name__}")
 
-const: Constant = modules.load_constant()
+const: Constant = load_constant()
 
 
 @dataclass
